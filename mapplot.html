@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+ <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+    <style>
+	div.tooltip {	
+   		
+    text-align: center;			
+    width: 150px;					
+    height: 40px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: lightsteelblue;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
+   div.years_buttons {
+        position: fixed;
+        top: 50px;
+        left: 50px;
+      }
+
+		div.years_buttons div {
+        background-color: white ;
+        padding: 3px;
+        margin: 7px;
+		border-style: solid;
+		border-width: 1px;
+		border-color: black;
+      }
+	  circle {
+        fill: orange;
+        stroke: black;
+        stroke-width: 1.5;
+        opacity: 0.7;
+    }
+	body{
+		background-color:black;
+	}
+	#texts{
+	width: 150px;					
+    height: 150px;	
+		
+		text-align:center;
+	opactity:0;
+	
+	}
+	.rounds_buttons{
+		width:10px;
+		height:15px;
+		color:black;
+		border: 1px solid black;		
+    border-radius: 8px;	
+	}
+	#container{
+		overflow:hidden;
+	}
+    </style>
+    <script type="text/javascript">  
+	
+      function draw(geo_data) {
+        "use strict";
+        var margin = 75,
+            width = 1400 - margin,
+            height = 600 - margin;
+var zoom = d3.behavior.zoom()
+     .scaleExtent([1, 8])
+    .on("zoom");
+	
+        var svg = d3.select("#svg")
+            .append("svg")
+            .attr("width", width + margin)
+            .attr("height", height + margin)
+            //.attr("width", "100%")
+			//.attr("height", "100%")
+			.call(d3.behavior.zoom().on("zoom", function () {
+					svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+					}))
+			.append('g')
+            .attr('class', 'map');
+			
+
+		//get projection function for mercator
+		var merc_projection = d3.geo.mercator()
+									.scale(180)//zoom 
+									.translate([width/2,height/1.6]);//centre
+
+        var path = d3.geo.path().projection(merc_projection);
+
+        var map = svg.selectAll('path')
+                     .data(geo_data.features)
+                     .enter()
+                     .append('path')
+                     .attr('d', path)
+					 .style('fill', 'lightBlue')
+                     .style('stroke', 'black')
+                     .style('stroke-width', 0.5);
+		
+		
+			
+       	function plotRaceTracks(data){
+		
+		debugger;
+		
+		var aggregated_data = d3.nest()
+			//grouping to subset the data
+							.key(function(d){
+								//group all 
+								return d['Country'];
+								debugger;
+								})
+							
+				//function to get summary statistics (attendance + location) from subset	
+							.rollup(function(leaves){
+								//sum up attendances
+								var round = d3.sum(leaves, function(d) {
+								debugger;
+									return +d['Round'];
+									});
+								
+								var location=leaves.map(function(d){return d['Location']});
+								var first=leaves.map(function(d){return d['first']});
+								var second=leaves.map(function(d){return d['second']});
+								var third = leaves.map(function(d){return d['third']});
+								//var First=leaves.map(function(d) {return d['first']});
+								// convert each lat and long into pixel values
+								var pixel_coords = leaves.map( function(d) {
+									debugger;
+									return merc_projection([+d.long, +d.lat]);
+									});
+
+								// get average lat pixel value
+								var avg_x = d3.mean(pixel_coords, function(d) {
+									debugger;
+									return d[0];
+									});
+											
+								// get average long pixel value
+								var avg_y = d3.mean(pixel_coords, function(d) {
+									debugger;
+									return d[1];
+									});
+								
+								return {//return values for the rollup function
+										//aggregates for avg pixel location and total attendance
+										//'Round' : round,
+										'Round':round,
+										'first':first,
+										'second':second,
+										'third':third,
+										'Location':location,
+										'x' : 	avg_x,
+										'y' : 	avg_y,
+										
+										};
+								})
+							//pass all data through functions
+							.entries(data);
+							
+							
+							
+							
+
+		 var Tooltip = d3.select("#mydiv")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0)
+	  .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "2px")
+      .style("border-radius", "5px")
+      .style("padding", "5px")
+	  /*var years = [];
+		
+		for (var i=2010;i<2015; i++){
+			
+				years.push(i);
+			
+		}
+		
+		
+		
+		
+	  var buttons = d3.select("body")
+                        .append("div")
+                        .attr("class", "years_buttons")
+                        .selectAll("div")
+                        .data(years)
+                        .enter()
+                        .append("div")
+                        .text(function(d) {
+                            return d;
+                        });*/
+    // Three function that change the tooltip when user hover / move / leave a cell
+    var mouseover = function(d) {
+      Tooltip
+	  .style("opacity", 1)
+	  
+    }
+	 map.on("click", function(d) {
+	 debugger;
+          var coords = d3.mouse(this);
+			
+          // Normally we go from data to pixels, but here we're doing pixels to data
+         
+          })
+    var mousemove = function(d) {
+	debugger;
+		
+		/*var countries=d.values.Location;
+		console.log(d3.event);
+		
+	map.transition()
+			.duration(850)			
+			.attr("transform","translate("+d3.event.screenX+","+d3.event.screenY+")scale(3)")
+	*/
+		
+		 
+	debugger;
+      Tooltip
+        .html("Round  "+d.values.Round + "<br>" +" Location: " + d.values.Location )
+        .style("left", (d3.event.pageX) + "px")		
+       .style("top", (d3.event.pageY - 28) + "px");	
+	  
+		//.style("left", (d3.mouse(this)[0]+10) + "px")
+        //.style("top", (d3.mouse(this)[1]) + "px")
+    }
+    var mouseleave = function(d) {
+      Tooltip.style("opacity", 0)
+	  
+	  map.transition()
+			.duration(750)
+			.attr("transform","translate(0,0)scale(1)")
+	  	
+	
+    }
+
+		
+		
+		///ZOOM IN on click function
+	var rounds = [];
+		
+		for (var i=0;i<2; i++){
+			
+				rounds.push(i);
+			
+		}
+		
+		
+		var rounds_index = 0;
+		debugger;
+var refresh_Interval = setInterval(function(){
+		//refresh(rounds[_index]);
+		rounds_index++;
+		console.log(rounds_index);
+			if(rounds_index>= rounds.length){
+				clearInterval(refresh_Interval);
+				var buttons = d3.select("#texts")
+                        .append("div")
+                        .attr("class", "Rounds_buttons")
+                        .selectAll("div")
+                        .data(data)
+                        .enter()
+                        .append("div")
+						.style("color", "black")
+						.style("border", "1px solid black")
+                        .text(function(d) {
+							console.log(d);
+                            return "Round: "+d.Round +" "+"Location "+ d.Location;
+                        });
+
+                buttons.on("click", function(d) {
+                    d3.select(".Rounds_buttons")
+                      .selectAll("div")
+                      .transition()
+                      .duration(500)
+                      .style("color", "black")
+                      .style("background", "white")
+					  
+					 
+						
+                    d3.select(this)
+                      .transition()
+                      .duration(500)
+                      .style("background", "lightBlue")
+                      .style("color", "black")
+					  
+                    //refresh(d);
+				
+                });
+			}
+			},1000);
+	
+        
+ var clicked = function(d) {
+		drivers(d);
+		
+}
+
+			svg.append('g')
+			.attr("class", "bubble")
+			.style("color","orange")
+			.selectAll("circle")
+			.data(aggregated_data)
+			.enter()
+			.append("circle")
+			.attr('cx',function(d){return d.values['x'];})
+			.attr('cy',function(d){return d.values['y'];})
+			.attr('r',function(d){return 4;})
+			.on("mouseover", mouseover)
+			.on("mousemove", mousemove)
+			.on("mouseleave", mouseleave)
+			.on("click",clicked);
+        debugger;
+        };
+
+
+
+
+
+
+
+
+
+       
+
+        d3.csv("locations.csv", function(d) {
+          d['Round'] = +d['Round'];
+          d['year'] = +d['year'];
+		  d['Location']= d['Location'];
+		 
+          return d;
+        }, plotRaceTracks);
+      };
+	  
+	  
+	  function drivers(d) {
+	var click = function(d)
+	{
+		
+		d3.selectAll('#texts')
+			.style("opacity",1)
+	}
+	
+	
+	var txt=d3.select('#texts')
+		.on("click",click);
+		txt.append("div")
+		txt.style("opacity",1)
+		txt.style("color","blue")
+	   .attr("x", 50)
+       .attr("y", 50)
+       .attr("font-size", "30px")
+	   
+	   var title=d3.select("#title")
+	   .style("color","black")
+	   .text("2018 Results")
+	   
+	   var location=d3.select("#location")
+	   .style("color","black")
+	   .text("Location: "+ d.values.Location)
+	   var round=d3.select("#round")
+	   .style("color","black")
+	   .text("Round: "+ d.values.Round)
+	   var p1=d3.select("#p1")
+	  .text("First:" +d.values.first)
+	    var p2=d3.select("#p2")
+	  .text("Second:" +d.values.second)
+	    var p1=d3.select("#p3")
+	 .text("Third:" +d.values.third)
+	/*   
+	   txt.append("p")
+	   .text("First:" +d.values.first)
+	    txt.append("p")
+	   .text("Second:" +d.values.second)
+	 txt.append("p")
+	   .text("Third:" +d.values.third)
+		
+		*/
+    }
+	  
+      </script>
+	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  </head>
+<body>
+<div class="container">
+  <h3>Formula 1 Data Visualisation</h3>
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="mapplot.html">Map</a></li>
+    <li ><a href="ConstructorsWithAnimation.html">Constructor Wins chart</a></li>
+    <li><a href="DriverwinsBarchart.html">Driver Wins Chart</a></li>
+   </ul>
+ </div>
+ 
+  <div width="400" height="100" style="float:right;" id="texts">
+	<h3 id="Round"></h3>
+	<h3 id="location"></h3>
+	<h3 id="round"></h3>
+  <p id="p1"></p>
+  <p id="p2"></p>
+  <p id="p3"></p>
+</div>
+ <div id="container">
+<svg width="1400" height="800" id="svg"></svg>
+
+<div id="mydiv"></div>
+</div>
+  <script type="text/javascript">
+  /*
+    Use D3 to load the GeoJSON file
+    */
+    
+d3.json("world_countries.json", draw);
+  </script>
+</body>
+</html>
