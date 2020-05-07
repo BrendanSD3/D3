@@ -252,11 +252,11 @@ var zoom = d3.behavior.zoom()
 		
 		var rounds_index = 0;
 		debugger;
-var refresh_Interval = setInterval(function(){
+/* var refresh_Interval = setInterval(function(){
 		//refresh(rounds[_index]);
 		rounds_index++;
-		console.log(rounds_index);
-			if(rounds_index>= rounds.length){
+		console.log(rounds_index); */
+			/* if(rounds_index>= rounds.length){
 				clearInterval(refresh_Interval);
 				var buttons = d3.select("#texts")
                         .append("div")
@@ -267,7 +267,7 @@ var refresh_Interval = setInterval(function(){
                         .append("div")
 						.style("color", "black")
 						.style("border", "1px solid black")
-                        .text(function(d) {
+						.text(function(d) {
 							console.log(d);
                             return "Round: "+d.Round +" "+"Location "+ d.Location;
                         });
@@ -288,11 +288,11 @@ var refresh_Interval = setInterval(function(){
                       .style("background", "lightBlue")
                       .style("color", "black")
 					  
-                    //refresh(d);
+                    //refresh(d); */
 				
-                });
+        /*         });
 			}
-			},1000);
+			},1000); */
 	
         
  var clicked = function(d) {
